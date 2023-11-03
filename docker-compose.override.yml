@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+###> doctrine/doctrine-bundle ###
+  database:
+    image: mysql
+    ports:
+      - 3306:3306
+    networks:
+      - bilemo
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      MYSQL_DATABASE: 'bilemo'
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      PMA_HOST: database
+    depends_on:
+      - database
+    networks:
+      - bilemo
+
+networks:
+  bilemo:
+###< doctrine/doctrine-bundle ###
