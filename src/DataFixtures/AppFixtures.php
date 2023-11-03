@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Customer;
 use App\Entity\Phone;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -15,6 +16,9 @@ class AppFixtures extends Fixture
         $faker = Factory::create();
         $faker->addProvider(new Prices($faker));
 
+        /**
+         * ============ PHONE ============
+         */
         /* Default values for brands, capacity, colours and size */
         $brands = ['Samsung', 'Apple', 'Xiaomi', 'Google', 'Alcatel', 'Acer', 'Asus', 'Blackview'];
         $capacity = [64, 128, 256, 512, 1000, 2000];
@@ -59,6 +63,18 @@ class AppFixtures extends Fixture
             $phone->setPrice($faker->price(20000, 200000));
 
             $manager->persist($phone);
+        }
+
+        /**
+         * ============ CUSTOMER ============
+         */
+
+        for ($i = 0; $i < 20; $i++) {
+            $customer = new Customer();
+            $customer->setName($faker->company());
+            $customer->setEmail($faker->email());
+
+            $manager->persist($customer);
         }
 
         $manager->flush();
