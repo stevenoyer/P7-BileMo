@@ -2,15 +2,23 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Customer;
-use App\Entity\Phone;
-use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
+use App\Entity\Phone;
 use Liior\Faker\Prices;
+use App\Entity\Customer;
+use Doctrine\Persistence\ObjectManager;
+use Doctrine\Bundle\FixturesBundle\Fixture;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
+    private $userPasswordHasherInterface;
+
+    public function __construct(UserPasswordHasherInterface $userPasswordHasherInterface)
+    {
+        $this->userPasswordHasherInterface = $userPasswordHasherInterface;
+    }
+
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create();
@@ -70,9 +78,12 @@ class AppFixtures extends Fixture
          */
 
         for ($i = 0; $i < 20; $i++) {
+
             $customer = new Customer();
             $customer->setName($faker->company());
             $customer->setEmail($faker->email());
+            $customer->setRoles(['ROLE_CUSTOMER']);
+            $customer->setPassword($this->userPasswordHasherInterface->hashPassword($customer, 'password'));
 
             $manager->persist($customer);
         }
