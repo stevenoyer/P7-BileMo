@@ -6,6 +6,8 @@ use Faker\Factory;
 use App\Entity\Phone;
 use Liior\Faker\Prices;
 use App\Entity\Customer;
+use App\Entity\User;
+use App\Repository\CustomerRepository;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -77,7 +79,8 @@ class AppFixtures extends Fixture
          * ============ CUSTOMER ============
          */
 
-        for ($i = 0; $i < 20; $i++) {
+        $customers = [];
+        for ($i = 0; $i < 5; $i++) {
 
             $customer = new Customer();
             $customer->setName($faker->company());
@@ -86,6 +89,24 @@ class AppFixtures extends Fixture
             $customer->setPassword($this->userPasswordHasherInterface->hashPassword($customer, 'password'));
 
             $manager->persist($customer);
+            $customers[] = $customer;
+        }
+
+        /**
+         * ============ USERS ============
+         */
+
+        for ($i = 0; $i < 50; $i++) {
+            $user = new User();
+            $user->setFirstname($faker->firstName());
+            $user->setLastname($faker->lastName());
+            $user->setEmail($faker->email());
+            $user->setRoles(['ROLE_USER']);
+            $user->setPassword($this->userPasswordHasherInterface->hashPassword($user, 'password'));
+
+            $user->setCustomer($customers[rand(0, 4)]);
+
+            $manager->persist($user);
         }
 
         $manager->flush();
