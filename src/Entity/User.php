@@ -2,16 +2,15 @@
 
 namespace App\Entity;
 
-use App\Repository\CustomerRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: CustomerRepository::class)]
-class Customer implements UserInterface, PasswordAuthenticatedUserInterface
+#[ORM\Entity(repositoryClass: UserRepository::class)]
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -21,6 +20,8 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 180, unique: true)]
     #[Groups(['getUsers'])]
+    #[Assert\NotBlank(message: "L'adresse e-mail est obligatoire.")]
+    #[Assert\Length(min: 1, max: 180, minMessage: "L'adresse e-mail doit faire au moins {{ limit }} caractères", maxMessage: "L'adresse e-mail ne peut pas faire plus de {{ limit }} caractères")]
     private ?string $email = null;
 
     #[ORM\Column]
@@ -31,19 +32,25 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Groups(['getUsers'])]
+    #[Assert\NotBlank(message: "Le mot de passe est obligatoire.")]
     private ?string $password = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 50)]
     #[Groups(['getUsers'])]
-    private ?string $name = null;
+    #[Assert\NotBlank(message: "Le nom de famille est obligatoire.")]
+    #[Assert\Length(min: 1, max: 50, minMessage: "Le nom de famille doit faire au moins {{ limit }} caractères", maxMessage: "Le nom de famille ne peut pas faire plus de {{ limit }} caractères")]
+    private ?string $lastname = null;
 
-    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: User::class)]
-    private Collection $users;
+    #[ORM\Column(length: 50)]
+    #[Groups(['getUsers'])]
+    #[Assert\NotBlank(message: "Le prénom est obligatoire.")]
+    #[Assert\Length(min: 1, max: 50, minMessage: "Le prénom doit faire au moins {{ limit }} caractères", maxMessage: "Le prénom ne peut pas faire plus de {{ limit }} caractères")]
+    private ?string $firstname = null;
 
-    public function __construct()
-    {
-        $this->users = new ArrayCollection();
-    }
+    #[ORM\ManyToOne(inversedBy: 'users', targetEntity: Customer::class)]
+    #[Groups(['getUsers'])]
+    private ?Customer $customer = null;
 
     public function getId(): ?int
     {
@@ -134,44 +141,38 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
         // $this->plainPassword = null;
     }
 
-    public function getName(): ?string
+    public function getLastname(): ?string
     {
-        return $this->name;
+        return $this->lastname;
     }
 
-    public function setName(string $name): static
+    public function setLastname(string $lastname): static
     {
-        $this->name = $name;
+        $this->lastname = $lastname;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, User>
-     */
-    public function getUsers(): Collection
+    public function getFirstname(): ?string
     {
-        return $this->users;
+        return $this->firstname;
     }
 
-    public function addUser(User $user): static
+    public function setFirstname(string $firstname): static
     {
-        if (!$this->users->contains($user)) {
-            $this->users->add($user);
-            $user->setCustomer($this);
-        }
+        $this->firstname = $firstname;
 
         return $this;
     }
 
-    public function removeUser(User $user): static
+    public function getCustomer(): ?Customer
     {
-        if ($this->users->removeElement($user)) {
-            // set the owning side to null (unless already changed)
-            if ($user->getCustomer() === $this) {
-                $user->setCustomer(null);
-            }
-        }
+        return $this->customer;
+    }
+
+    public function setCustomer(?Customer $customer): static
+    {
+        $this->customer = $customer;
 
         return $this;
     }
