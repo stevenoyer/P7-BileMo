@@ -8,6 +8,7 @@ use App\Repository\CustomerRepository;
 use App\Repository\UserRepository;
 use App\Service\CustomerService;
 use Doctrine\ORM\EntityManagerInterface;
+use JMS\Serializer\SerializationContext;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,7 +17,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasher;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Serializer\SerializerInterface;
+use JMS\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
@@ -69,12 +70,15 @@ class UserController extends AbstractController
         $idCache = 'getAllUsers-' . $page . '-' . $limit;
 
         /* Set cache */
-        $usersList = $cache->get($idCache, function (ItemInterface $item) use ($page, $limit, $customer) {
+        $jsonUsersList = $cache->get($idCache, function (ItemInterface $item) use ($page, $limit, $customer) {
             $item->tag('getAllUsers');
-            return $this->userRepository->findAllWithPagination($page, $limit, $customer);
+            $usersList = $this->userRepository->findAllWithPagination($page, $limit, $customer);
+
+            $context = SerializationContext::create()->setGroups(['getUsers']);
+            return $this->serializer->serialize($usersList, 'json', $context);
         });
 
-        return $this->json($usersList, JsonResponse::HTTP_OK, [], ['groups' => 'getUsers']);
+        return new JsonResponse($jsonUsersList, JsonResponse::HTTP_OK, [], true);
     }
 
     /**
@@ -88,7 +92,10 @@ class UserController extends AbstractController
             throw new ForbiddenException('Vous n\'avez pas accès à cette ressource.');
         }
 
-        return $this->json($user, JsonResponse::HTTP_FOUND, [], ['groups' => 'getUsers']);
+        $context = SerializationContext::create()->setGroups(['getUsers']);
+        $jsonUser = $this->serializer->serialize($user, 'json', $context);
+
+        return new JsonResponse($jsonUser, JsonResponse::HTTP_FOUND, [], true);
     }
 
     /**
@@ -103,10 +110,6 @@ class UserController extends AbstractController
          */
         $user = $this->serializer->deserialize($request->getContent(), User::class, 'json');
 
-        if (!$this->customerService->isGranted($request, $user)) {
-            throw new ForbiddenException('Vous n\'avez pas accès à cette ressource.');
-        }
-
         /* Get content in table form */
         $content = $request->toArray();
         $customerId = $content['customer_id'] ?? -1;
@@ -120,7 +123,7 @@ class UserController extends AbstractController
         $errors = $this->validator->validate($user);
 
         if ($errors->count() > 0) {
-            return $this->json($user, JsonResponse::HTTP_BAD_REQUEST);
+            return new JsonResponse($this->serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
         }
 
         $cache->invalidateTags(['getAllUsers']);
@@ -131,7 +134,10 @@ class UserController extends AbstractController
         /* Generate the url for the http header */
         $location = $this->urlGenerator->generate('app_detail_user', ['id' => $user->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        return $this->json($user, JsonResponse::HTTP_CREATED, ['Location' => $location], ['groups' => 'getUsers']);
+        $context = SerializationContext::create()->setGroups(['getUsers']);
+        $jsonUser = $this->serializer->serialize($user, 'json', $context);
+
+        return new JsonResponse($jsonUser, JsonResponse::HTTP_CREATED, ['Location' => $location], true);
     }
 
     /**
