@@ -41,31 +41,31 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Groups(['getUsers'])]
+    #[Groups(['getUsers', 'createUser'])]
     #[Assert\NotBlank(message: "L'adresse e-mail est obligatoire.")]
     #[Assert\Length(min: 1, max: 180, minMessage: "L'adresse e-mail doit faire au moins {{ limit }} caractères", maxMessage: "L'adresse e-mail ne peut pas faire plus de {{ limit }} caractères")]
     private ?string $email = null;
 
     #[ORM\Column]
-    #[Groups(['getUsers'])]
+    #[Groups(['getUsers', 'createUser'])]
     private array $roles = [];
 
     /**
      * @var string The hashed password
      */
     #[ORM\Column]
-    #[Groups(['getUsers'])]
+    #[Groups(['getUsers', 'createUser'])]
     #[Assert\NotBlank(message: "Le mot de passe est obligatoire.")]
     private ?string $password = null;
 
     #[ORM\Column(length: 50)]
-    #[Groups(['getUsers'])]
+    #[Groups(['getUsers', 'createUser'])]
     #[Assert\NotBlank(message: "Le nom de famille est obligatoire.")]
     #[Assert\Length(min: 1, max: 50, minMessage: "Le nom de famille doit faire au moins {{ limit }} caractères", maxMessage: "Le nom de famille ne peut pas faire plus de {{ limit }} caractères")]
     private ?string $lastname = null;
 
     #[ORM\Column(length: 50)]
-    #[Groups(['getUsers'])]
+    #[Groups(['getUsers', 'createUser'])]
     #[Assert\NotBlank(message: "Le prénom est obligatoire.")]
     #[Assert\Length(min: 1, max: 50, minMessage: "Le prénom doit faire au moins {{ limit }} caractères", maxMessage: "Le prénom ne peut pas faire plus de {{ limit }} caractères")]
     private ?string $firstname = null;
