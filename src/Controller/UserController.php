@@ -235,8 +235,6 @@ class UserController extends AbstractController
         $user = $this->serializer->deserialize($request->getContent(), User::class, 'json');
 
         /* Get content in table form */
-        $content = $request->toArray();
-        //$customerId = $content['customer_id'] ?? -1;
         $customer = $this->customerService->getCustomerByToken($request);
 
         /* Set find customer by customer_id in content */
