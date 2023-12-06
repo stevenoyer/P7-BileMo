@@ -1,5 +1,12 @@
 # P7-BileMo
 
+## Pré-requis
+
+- PHP > 8.2
+- Symfony 5.4.\*
+- MySQL > 8
+- Symfony CLI
+
 ## Installation
 
 Pour installer le projet Bilemo, suivez ces étapes dans votre terminal :
@@ -64,7 +71,7 @@ Une fois la base de données connectée, exécutez les commandes suivantes dans 
 ```
 symfony console doctrine:database:create ou php bin/console doctrine:database:create
 symfony console doctrine:migrations:migrate ou php bin/console doctrine:migrations:migrate
-symfony console doctrine:fictures:load ou php bin/console doctrine:fictures:load
+symfony console doctrine:fixtures:load ou php bin/console doctrine:fictures:load
 ```
 
 Si les commandes ci-dessus ne fonctionnent pas, vérifiez vos informations de connexion à la base de données.
