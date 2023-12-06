@@ -54,6 +54,11 @@ class PhoneController extends AbstractController
      *     description = "Cette ressource n'existe pas."
      * )
      * 
+     * @OA\Response(
+     *     response = 500,
+     *     description = "Erreur serveur."
+     * )
+     * 
      * @OA\Tag(name="Phone")
      * 
      * @param PhoneRepository $phoneRepository
@@ -114,6 +119,11 @@ class PhoneController extends AbstractController
      * @OA\Response(
      *     response = 404,
      *     description = "Cette ressource n'existe pas."
+     * )
+     * 
+     * @OA\Response(
+     *     response = 500,
+     *     description = "Erreur serveur."
      * )
      * 
      * @OA\Tag(name="Phone")

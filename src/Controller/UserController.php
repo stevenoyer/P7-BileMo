@@ -99,6 +99,11 @@ class UserController extends AbstractController
      *     description = "Cette ressource n'existe pas."
      * )
      * 
+     * @OA\Response(
+     *     response = 500,
+     *     description = "Erreur serveur."
+     * )
+     * 
      * @OA\Tag(name="User")
      * 
      * @param Request $request
@@ -168,6 +173,11 @@ class UserController extends AbstractController
      *     description = "Cette ressource n'existe pas."
      * )
      * 
+     * @OA\Response(
+     *     response = 500,
+     *     description = "Erreur serveur."
+     * )
+     * 
      * @OA\Tag(name="User")
      * 
      * @param User $user
@@ -217,6 +227,11 @@ class UserController extends AbstractController
      *     description = "Cette ressource n'existe pas."
      * )
      * 
+     * @OA\Response(
+     *     response = 500,
+     *     description = "Erreur serveur."
+     * )
+     * 
      * @OA\RequestBody(@Model(type=User::class, groups={"createUser"}))
      * @OA\Tag(name="User")
      * 
@@ -235,6 +250,7 @@ class UserController extends AbstractController
         $user = $this->serializer->deserialize($request->getContent(), User::class, 'json');
 
         /* Get content in table form */
+        $content = $request->toArray();
         $customer = $this->customerService->getCustomerByToken($request);
 
         /* Set find customer by customer_id in content */
@@ -296,6 +312,11 @@ class UserController extends AbstractController
      *        type="integer"
      *    )
      *  )
+     * 
+     * @OA\Response(
+     *     response = 500,
+     *     description = "Erreur serveur."
+     * )
      * 
      * @OA\Tag(name="User")
      * 
