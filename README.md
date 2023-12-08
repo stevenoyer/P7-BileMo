@@ -57,11 +57,11 @@ Sinon, remplacez les éléments suivants :
 DATABASE_URL="mysql://USER:PASSWORD@IP:PORT/DB_NAME?serverVersion=8&charset=utf8mb4"
 ```
 
-**USER :** nom d'utilisateur de votre base de données
-**PASSWORD :** mot de passe de votre base de données (généralement absent en environnement local)
-**DB_NAME :** nom de la base de données (dans notre cas, bilemo)
-**IP :** IP de votre base de données (généralement : 127.0.0.1 ou localhost)
-**PORT :** port de votre base de données (généralement 3306)
+- **USER :** nom d'utilisateur de votre base de données
+- **PASSWORD :** mot de passe de votre base de données (généralement absent en environnement local)
+- **DB_NAME :** nom de la base de données (dans notre cas, bilemo)
+- **IP :** IP de votre base de données (généralement : 127.0.0.1 ou localhost)
+- **PORT :** port de votre base de données (généralement 3306)
 
 Si vous n'utilisez pas MySQL, mais un autre type de base de données, consultez la documentation Symfony :
 https://symfony.com/doc/current/doctrine.html#configuring-the-database
